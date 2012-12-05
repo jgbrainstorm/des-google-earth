@@ -33,54 +33,45 @@ import glob as gl
 import os
 
 
-def make_kml_image():
-
-    """ this crate the hiachy of dir and warped images"""
-
-    pngDIR = 'somewhere/pngfile/'
-    fitsDIR = 'somewhere/fitsfile/'
-    kmlDIR = 'somewhere/kmlfile/'
-
+def make_kml_image(pngDIR = None,fitsDIR = None,kmlDIR = None,regionate = True):
+    """ 
+    this crate the hiachy of dir and warped images
+    """
     pngNAME = gl.glob(pngDIR+'*.png')
     fitsNAME = gl.glob(fitsDIR+'*.fits')
-
     pngNAME.sort()
     fitsNAME.sort()
-
     num = len(pngNAME)
-
+    wcs2kmldir='/home/jghao/research/ggsvn/des-google-earth/wcs2kml_install/bin/'
     for i in range(0,num):
-
-        kmlNAME = kmlDIR+pngNAME[i][47:68]+'.kml'
-        regionateDIR=kmlDIR+pngNAME[i][47:68]
-        comand = 'wcs2kml --imagefile='+pngNAME[i]+' --fitsfile='+fitsNAME[i]+' --kmlfile='+kmlNAME+' --regionate'+' --regionate_dir='+regionateDIR
+        kmlNAME = kmlDIR+pngNAME[i][-17:-4]+'.kml'
+        if regionate == True:
+            regionateDIR=kmlDIR+pngNAME[i][-17:-4]
+            comand = wcs2kmldir+'wcs2kml --imagefile='+pngNAME[i]+' --fitsfile='+fitsNAME[i]+' --kmlfile='+kmlNAME+' --regionate'+' --regionate_dir='+regionateDIR+' --input_image_origin_is_upper_left=true --regionate_min_lod_pixels=0'
+        else:
+            comand = wcs2kmldir+'wcs2kml --imagefile='+pngNAME[i]+' --fitsfile='+fitsNAME[i]+' --kmlfile='+kmlNAME+' --outfile='+kmlDIR+pngNAME[i][-13:-4]+'wrap.png'
         os.system(comand)
-
     print("---The End----")
     return(0)
 
 
-def make_root_kml():
-
-    """ This function create the root kml file"""
-    kmlDIR = 'somewhere/kmlfile/'
-    kmlNAME = gl.glob(kmlDIR+'fpC*.kml')
+def make_root_kml(kmlDIR = None):
+    """ 
+    This function create the root kml file
+    """
+    kmlNAME = gl.glob(kmlDIR+'*.kml')
     kmlNAME.sort()
     num = len(kmlNAME)
-
-    kml=open('coadd_ge_hao.kml','w')
+    kml=open('des_ge_fnal_patch2_hao.kml','w')
     kml.write('<?xml version="1.0" encoding="UTF-8"?> \n')
     kml.write('<kml xmlns="http://earth.google.com/kml/2.2" hint="target=sky"> \n')
     kml.write('<Document>\n')
-
-    for i in range(0,num):
-             
+    for i in range(0,num): 
         f = open(kmlNAME[i],'r')
         line = f.readlines()
         for j in range(3,20):
             kml.write(line[j])
         f.close()
-
     kml.write('</Document>\n')
     kml.write('</kml>\n')
     kml.close()
@@ -130,19 +121,23 @@ def remove_file():
     return(0)
  
      
+if __name__ == "__main__":
+    
+    from des_kml_creation import *
 
-#----main program--------------
+    #--- make color png file from fits file ---
+    
+    # ---this is optional. skip it if you want the full resolution images---
+    step1 = rescale_png() 
 
+    #----make kml and warped images
+    pngDIR = '/home/jghao/research/data/des_realimage/des-google/stripe82_coadd/medium/gri/'
+    fitsDIR = '/home/jghao/research/data/des_realimage/des-google/stripe82_coadd/medium/'
 
-# ---this is optional. skip it if you want the full resolution images---------
-step1 = rescale_png() 
+    kmlDIR = '/home/jghao/research/data/des_realimage/des-google/stripe82_coadd/medium/gri/kml/'
 
+    
+    step2=make_kml_image(pngDIR,fitsDIR,kmlDIR)
 
-#----make kml and warped images
-
-step2=make_kml_image()
-
-
-#----make the final kml file -----
-
-step3=make_root_kml()
+    #----make the final kml file -----
+    step3=make_root_kml(kmlDIR)

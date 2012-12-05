@@ -34,7 +34,7 @@ def makeKML(fileName=None,clusterID=None,ra=None, dec=None,z=None,richness = Non
     for i in range(num):
         file.write('<Folder>\n')
         file.write('<Placemark> \n')
-        #file.write('<name> Cluster:'+str(z[i])+'</name>\n')
+        file.write('<name> Cluster:'+str(z[i])+'</name>\n')
         file.write('<description>\n')
         file.write('<![CDATA[ \n')
         file.write('<ul>\n')
@@ -44,7 +44,7 @@ def makeKML(fileName=None,clusterID=None,ra=None, dec=None,z=None,richness = Non
             file.write('<li> <b> Richness: '+str(richness[i])+'</b>\n')
         #file.write('<li> <b> <a href="http://cas.sdss.org/dr7/en/tools/chart/navi.asp?ra='str(ra[i])+'&dec='+str(dec[i])+'&scale=0.800000&width=919&height=919&opt=GS&query=" target="frame2"> SDSS Image </a></b>\n')  
         file.write('</ul>\n')
-        file.write('KMZ by: J. Hao @ Fermilab, 2012 ]]> \n')
+        file.write('KML by: J. Hao @ Fermilab, 2012 ]]> \n')
         file.write('</description> \n')
         file.write(' <LookAt> \n')
         file.write(' <longitude>'+str(ra[i]-180.)+'</longitude> \n')
